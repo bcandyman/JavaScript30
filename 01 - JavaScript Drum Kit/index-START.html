@@ -1,14 +1,16 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <title>JS Drum Kit</title>
   <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
 
 
-  <div class="keys">
+  <div class="keys" id='keys'>
     <div data-key="65" class="key">
       <kbd>A</kbd>
       <span class="sound">clap</span>
@@ -57,10 +59,39 @@
   <audio data-key="75" src="sounds/tom.wav"></audio>
   <audio data-key="76" src="sounds/tink.wav"></audio>
 
-<script>
+  <script>
 
-</script>
+    window.addEventListener('keydown', (e) => {
+      // attempt to assign elements associated with the pressed key
+      const buttonElement = document.querySelector(`div[data-key="${e.keyCode}"]`);
+      const audioElement = document.querySelector(`audio[data-key="${e.keyCode}"]`);
+
+      // if element matching key pressed was successful
+      if (buttonElement !== null) {
+        // apply class to display visuals
+        buttonElement.classList.add('playing');
+        // set time to 0. This allows audio to restart without waiting until sound clip is finished
+        audioElement.currentTime = 0;
+        // play the audio clip
+        audioElement.play();
+      };
+    });
+
+
+    window.addEventListener('keyup', (e) => {
+      // attempt to assign elements associated with the pressed key
+      const buttonElement = document.querySelector(`div[data-key="${e.keyCode}"]`);
+
+      // if element matching key pressed was successful
+      if (buttonElement !== null) {
+        // remove class to reset visuals to defaults
+        buttonElement.classList.remove('playing');
+      }
+    });
+
+  </script>
 
 
 </body>
+
 </html>
