@@ -11,6 +11,9 @@
 			const canvas = document.getElementById("draw");
 			const ctx = canvas.getContext("2d");
 			let isMouseButtonDown = false;
+            let pulsing;
+            let lineWidth = 2;
+            let increment = true;
 
 			// define dimensions of the canvas element
 			canvas.width = window.innerWidth;
@@ -18,23 +21,31 @@
 
 			// handle if mouse button is pressed
 			document.addEventListener("mousedown", function() {
+                pulsing = setInterval(pulseLineWidth, 15);
 				isMouseButtonDown = true;
 			});
 
 			// handle if mouse button is pressed
 			document.addEventListener("mouseup", function() {
+                clearInterval(pulsing)
 				isMouseButtonDown = false;
-            });
-            
-            function pulsingLineWidth(){
+			});
 
-            };
+			function pulseLineWidth() {
+                // flip increment/decrement if on limit
+				if (lineWidth >= 100 || lineWidth <= 1) increment = !increment;
+
+                // calculate new line width
+				lineWidth += increment * 2 - 1;
+			}
+
 
 			canvas.addEventListener("mousemove", function(e) {
 				if (isMouseButtonDown) {
+                    ctx.beginPath();
 					ctx.moveTo(e.x - e.movementX, e.y - e.movementY);
 					ctx.lineTo(e.x, e.y);
-					ctx.lineWidth = 20;
+					ctx.lineWidth = lineWidth;
 					ctx.lineCap = "round";
 					ctx.stroke();
 				}
