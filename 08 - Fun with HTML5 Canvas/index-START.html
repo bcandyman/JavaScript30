@@ -1,19 +1,62 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>HTML5 Canvas</title>
-</head>
-<body>
-<canvas id="draw" width="800" height="800"></canvas>
-<script>
-</script>
+	<head>
+		<meta charset="UTF-8" />
+		<title>HTML5 Canvas</title>
+	</head>
+	<body>
+		<canvas id="draw" width="800" height="800"></canvas>
+		<script>
+			// declare variables
+			const canvas = document.getElementById("draw");
+			const ctx = canvas.getContext("2d");
+			let isMouseButtonDown = false;
+            let pulsing;
+            let lineWidth = 2;
+            let increment = true;
 
-<style>
-  html, body {
-    margin: 0;
-  }
-</style>
+			// define dimensions of the canvas element
+			canvas.width = window.innerWidth;
+			canvas.height = window.innerHeight;
 
-</body>
+			// handle if mouse button is pressed
+			document.addEventListener("mousedown", function() {
+                pulsing = setInterval(pulseLineWidth, 15);
+				isMouseButtonDown = true;
+			});
+
+			// handle if mouse button is pressed
+			document.addEventListener("mouseup", function() {
+                clearInterval(pulsing)
+				isMouseButtonDown = false;
+			});
+
+			function pulseLineWidth() {
+                // flip increment/decrement if on limit
+				if (lineWidth >= 100 || lineWidth <= 1) increment = !increment;
+
+                // calculate new line width
+				lineWidth += increment * 2 - 1;
+			}
+
+
+			canvas.addEventListener("mousemove", function(e) {
+				if (isMouseButtonDown) {
+                    ctx.beginPath();
+					ctx.moveTo(e.x - e.movementX, e.y - e.movementY);
+					ctx.lineTo(e.x, e.y);
+					ctx.lineWidth = lineWidth;
+					ctx.lineCap = "round";
+					ctx.stroke();
+				}
+			});
+		</script>
+
+		<style>
+			html,
+			body {
+				margin: 0;
+			}
+		</style>
+	</body>
 </html>
