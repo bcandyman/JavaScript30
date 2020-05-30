@@ -1,62 +1,88 @@
 <!DOCTYPE html>
 <html lang="en">
-	<head>
-		<meta charset="UTF-8" />
-		<title>HTML5 Canvas</title>
-	</head>
-	<body>
-		<canvas id="draw" width="800" height="800"></canvas>
-		<script>
-			// declare variables
-			const canvas = document.getElementById("draw");
-			const ctx = canvas.getContext("2d");
-			let isMouseButtonDown = false;
-            let pulsing;
-            let lineWidth = 2;
-            let increment = true;
 
-			// define dimensions of the canvas element
-			canvas.width = window.innerWidth;
-			canvas.height = window.innerHeight;
+<head>
+  <meta charset="UTF-8" />
+  <title>HTML5 Canvas</title>
+</head>
 
-			// handle if mouse button is pressed
-			document.addEventListener("mousedown", function() {
-                pulsing = setInterval(pulseLineWidth, 15);
-				isMouseButtonDown = true;
-			});
+<body>
+  <canvas id="draw" width="800" height="800"></canvas>
+  <script>
 
-			// handle if mouse button is pressed
-			document.addEventListener("mouseup", function() {
-                clearInterval(pulsing)
-				isMouseButtonDown = false;
-			});
+    // declare variables
+    const canvas = document.getElementById("draw");
+    const ctx = canvas.getContext("2d");
+    let isMouseButtonDown = false;
 
-			function pulseLineWidth() {
-                // flip increment/decrement if on limit
-				if (lineWidth >= 100 || lineWidth <= 1) increment = !increment;
+    let stroke = {
+      pulseTimers: [],
+      size: { val: 11, dir: true },
+      color: {
+        saturation: { val: 2, dir: true },
+        hue: { val: 2, dir: true },
+      }
+    }
 
-                // calculate new line width
-				lineWidth += increment * 2 - 1;
-			}
+    // define dimensions of the canvas element
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    // handle if mouse button is pressed
+    document.addEventListener("mousedown", function() {
+
+      stroke.pulseTimers[0] = setInterval(() => {
+        stroke.size = pulse(10, 50, stroke.size.val, stroke.size.dir)
+      }, 50);
+      stroke.pulseTimers[1] = setInterval(() => {
+        stroke.color.saturation = pulse(0, 100, stroke.color.saturation.val, stroke.color.saturation.dir)
+      }, 15);
+      stroke.pulseTimers[2] = setInterval(() => {
+        stroke.color.hue = pulse(0, 360, stroke.color.hue.val, stroke.color.hue.dir)
+      }, 5);
 
 
-			canvas.addEventListener("mousemove", function(e) {
-				if (isMouseButtonDown) {
-                    ctx.beginPath();
-					ctx.moveTo(e.x - e.movementX, e.y - e.movementY);
-					ctx.lineTo(e.x, e.y);
-					ctx.lineWidth = lineWidth;
-					ctx.lineCap = "round";
-					ctx.stroke();
-				}
-			});
-		</script>
+      isMouseButtonDown = true;
+    });
 
-		<style>
-			html,
-			body {
-				margin: 0;
-			}
-		</style>
-	</body>
+    // handle if mouse button is pressed
+    document.addEventListener("mouseup", function() {
+      clearInterval(stroke.pulseTimers[0])
+      clearInterval(stroke.pulseTimers[1])
+      clearInterval(stroke.pulseTimers[2])
+      stroke.pulseTimers = []
+      isMouseButtonDown = false;
+    });
+
+    function pulse(min, max, val, dir) {
+
+      // flip increment/decrement if on limit
+      if (val >= max || val <= min) dir = !dir;
+
+      // calculate new val and return      
+      return { val: val += dir * 2 - 1, dir }
+    }
+
+
+    canvas.addEventListener("mousemove", function(e) {
+      if (isMouseButtonDown) {
+        ctx.beginPath();
+        ctx.moveTo(e.x - e.movementX, e.y - e.movementY);
+        ctx.lineTo(e.x, e.y);
+        ctx.lineWidth = stroke.size.val;
+        ctx.strokeStyle = `hsl(${stroke.color.hue.val},${stroke.color.saturation.val}%,50%)`
+        ctx.lineCap = "round";
+        ctx.stroke();
+      }
+    });
+  </script>
+
+  <style>
+    html,
+    body {
+      margin: 0;
+    }
+  </style>
+</body>
+
 </html>
