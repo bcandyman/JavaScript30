@@ -96,13 +96,37 @@
 
 		<script>
 			const inputs = document.querySelectorAll('input[type="checkbox"]');
+			let lastChecked;
 
-			function checkStatus() {
-				console.log(this.checked);
+			function checkStatus(checkBox, isShiftPressed) {
+				const isChecked = checkBox.checked;
+
+				if (lastChecked && isShiftPressed) {
+					let inBetween = false;
+
+					inputs.forEach(input => {
+						if (
+							checkBox === input ||
+							lastChecked === input.parentElement
+						) {
+							inBetween = !inBetween;
+						}
+
+						if (inBetween) {
+							input.checked = checkBox.checked;
+						}
+					});
+				}
+
+				// capture element for handling if user holds shift on next checkbox change
+				// if (!isShiftPressed)
+				lastChecked = checkBox.parentElement;
 			}
 
 			inputs.forEach(input => {
-				input.addEventListener("click", checkStatus);
+				input.addEventListener("click", function(mouseEvent) {
+					checkStatus(this, mouseEvent.shiftKey);
+				});
 			});
 		</script>
 	</body>
