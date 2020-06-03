@@ -95,39 +95,39 @@
 		</div>
 
 		<script>
-			const inputs = document.querySelectorAll('input[type="checkbox"]');
-			let lastChecked;
 
-			function checkStatus(checkBox, isShiftPressed) {
-				const isChecked = checkBox.checked;
+            // initialize variables
+            // contains all items within the inbox element
+            const inbox = Array.from(document.querySelectorAll('.item'));
+            // captures the checkbox index in which the user checks
+			let clickedItems = [-1, -1];
 
-				if (lastChecked && isShiftPressed) {
-					let inBetween = false;
 
-					inputs.forEach(input => {
-						if (
-							checkBox === input ||
-							lastChecked === input.parentElement
-						) {
-							inBetween = !inBetween;
-						}
+			function handleCheckBox(clickedItem, isShiftPressed) {
 
-						if (inBetween) {
-							input.checked = checkBox.checked;
-						}
-					});
+                // if the user has already selected an item and has the shift key pressed
+				if (isShiftPressed && clickedItems[0] !== -1 ) {
+                    // capture the clicked item
+                    clickedItems[1] = inbox.indexOf(clickedItem);
+                    // sort the array in numerical order
+                    clickedItems.sort();
+                    // loop through selected items
+                    for (i = clickedItems[0]; i <= clickedItems[1]; i++){
+                        // apply last clicked checkbox value to all checkboxes in the array
+                        inbox[i].querySelector('input').checked = clickedItem.querySelector('input').checked;
+                    }
+				} else {
+                    // capture the clicked item
+                    clickedItems[0] = inbox.indexOf(clickedItem)
 				}
-
-				// capture element for handling if user holds shift on next checkbox change
-				// if (!isShiftPressed)
-				lastChecked = checkBox.parentElement;
 			}
 
-			inputs.forEach(input => {
-				input.addEventListener("click", function(mouseEvent) {
-					checkStatus(this, mouseEvent.shiftKey);
-				});
-			});
+            // apply event listeners to each 
+            inbox.forEach(function(item){
+                item.addEventListener('click', function(mouseEvent){
+                    handleCheckBox(this, mouseEvent.shiftKey);
+                })
+            });
 		</script>
 	</body>
 </html>
